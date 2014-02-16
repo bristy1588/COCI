@@ -1,0 +1,77 @@
+#include <string.h>
+#include <stdio.h>
+#include <iostream>
+#define inf 2000000009
+#define sz 1002
+using namespace std;
+int dp[sz][sz][2][2][2];
+bool vis[sz][sz][2][2][2];
+int bord[3][sz], N;
+
+inline int DP( int left, int at, int a, int b, int c)
+{
+    if(left == 0) return 0;
+    if(at==N) return -inf;
+
+    int &ret = dp[left][at][a][b][c];
+    bool &tk = vis[left][at][a][b][c];
+
+    if(tk==true) return ret;
+
+    int i, f[13];
+
+    for(i = 0; i < 12; i++) f[i] = -inf;
+
+    f[0] = DP(left, at+1, 1,1,1);
+    f[1] = DP(left-1, at+1,0,0,1) + bord[0][at] + bord[1][at];
+    f[2] = DP(left-1, at+1,1,0,0) + bord[2][at] + bord[1][at];
+
+    if(a==1)   f[3] = DP(left-1,at+1,0,1,1) + bord[0][at] + bord[0][at-1];
+    if(b==1)   f[4] = DP(left-1,at+1,1,0,1) + bord[1][at] + bord[1][at-1];
+    if(c==1)   f[5] = DP(left-1,at+1,1,1,0) + bord[2][at] + bord[2][at-1];
+    if(left > 1){
+        if(a==1 && b==1)
+        f[6] = DP(left-2,at+1,0,0,1) + bord[0][at] + bord[0][at-1] +bord[1][at] + bord[1][at-1];
+        if(a==1 && c==1)
+        f[7] = DP(left-2,at+1,0,1,0) + bord[0][at] + bord[0][at-1] +bord[2][at] + bord[2][at-1];
+        if(b==1 && c==1)
+        f[8] = DP(left-2,at+1,1,0,0) + bord[2][at] + bord[2][at-1] +bord[1][at] + bord[1][at-1];
+        if(a==1 && b==1 && c==1 && left>2)
+        f[9] = DP(left-3,at+1,0,0,0) + bord[2][at] + bord[2][at-1] +bord[1][at] + bord[1][at-1] +  bord[0][at] + bord[0][at-1];
+
+        if(a==1)
+        f[10]= DP(left-2,at+1,0,0,0) + bord[0][at-1] + bord[0][at] + bord[1][at] + bord[2][at];
+        if(c==1)
+        f[11]= DP(left-2,at+1,0,0,0) + bord[2][at-1] + bord[0][at] + bord[1][at] + bord[2][at];
+
+    }
+
+    ret = -inf;
+
+    for(i = 0; i < 12; i++)
+        ret = max(ret, f[i]);
+
+    tk = true;
+    return ret;
+}
+
+int main()
+{
+    int K,ans,i,j;
+
+    memset(vis, false , sizeof(vis));
+
+    cin >> N>> K;
+
+    for(i = 0; i < N; i++)
+        for(j = 0; j < 3; j++)
+            cin>> bord[j][i];
+
+    ans = DP(K,0,0,0,0);
+
+    cout<<ans<<endl;
+
+
+    return 0;
+
+}

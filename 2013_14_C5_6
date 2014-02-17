@@ -1,0 +1,73 @@
+#include <iostream>
+#include <stdio.h>
+#include <string.h>
+#define     Z       300005
+using namespace std;
+
+int p[Z];
+bool vis[Z],kip[Z];
+
+int parent(int a){
+
+    if(p[a]==a) return a;
+    p[a] = parent(p[a]);
+
+    return p[a];
+}
+void unite(int a, int b){
+    int pa,pb;
+
+    pa = parent(a);
+    pb = parent(b);
+    if(pa == pb) return;
+    p[pa] = pb;
+
+    return;
+}
+int main()
+{
+    int N,L,i,a,b,pa,pb;
+
+    cin >> N >> L;
+
+    for(i  = 0; i < L ; i++){
+        vis[i] = false;
+        p[i] = i;
+    }
+
+    for(i = 0; i < N; i++){
+        kip[i] = true;
+
+        cin>> a>>b;
+        a--; b--;
+
+        pa = parent(a);
+        pb = parent(b);
+
+        if(vis[a] == false){
+            vis[a] = true;
+            unite(a,b); continue;
+        }
+        if(vis[b] == false){
+            vis[b] = true;
+            unite(b,a); continue;
+        }
+        if(vis[pa]== false){
+            vis[pa] = true;
+            unite(a,b); continue;
+        }
+        if(vis[pb] == false){
+            vis[pb] = true;
+            unite(b,a); continue;
+        }
+
+        kip[i] = false;
+    }
+
+    for(i = 0; i < N; i++){
+        if(kip[i]==true) printf("LADICA\n");
+        else printf("SMECE\n");
+    }
+
+    return 0;
+}
